@@ -27,6 +27,7 @@ from telegram.ext import (
     CallbackQueryHandler,
     ConversationHandler,
 )
+
 import os
 
 PORT = int(os.environ.get('PORT', '8443'))
@@ -42,21 +43,23 @@ logger = logging.getLogger(__name__)
 
 
 
-# Stages
-FIRST, SECOND = 'bir', 'ikki'
-# Callback data
-ONE, TWO, THREE, FOUR = range(4)
 
 asosiy_tugma = "Suralar ro'yxati"
+kitob_haqida = "Qur'oni Karim haqida"
 
-main_buttons = ReplyKeyboardMarkup([
-	[asosiy_tugma],
+main_buttons = ReplyKeyboardMarkup(
+    [
+        [
+            asosiy_tugma,
+            kitob_haqida,
+        ],
+    
 	],
     resize_keyboard=True
 )
 
 
-def start(update: Update, context: CallbackContext) -> int:
+def start(update: Update, context: CallbackContext):
     """Send message on `/start`."""
     # Get user that sent /start and log his name
     user = update.message.from_user
@@ -73,14 +76,20 @@ def start(update: Update, context: CallbackContext) -> int:
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     # Send message with text and appended InlineKeyboard
+    
+    update.message.reply_html(text=f"<b>Assalom-u alaykum, <i> {username}</i> </b>\n\n\
+🤖 Men orqali <b>Qur'oni Karim suralari</b>ning o'zbekcha tarjimasini topishingiz mumkin 📖", reply_markup=main_buttons)
+    
+    kirish = "<i>Bismillahir rohmanir rohiym</i> \n        <b>QUR'ONI KARIM</b>\n\n"
+    kirish += "<i>Tarjima muallifi:</i> <b>Shayx Muhammad Sodiq Muhammad Yusuf</b>\n"
+    kirish += "<i>Suralar haqida:</i> <b>Alouddin Mansur</b>\n\n"
+    kirish += "<i>Abdulaziz Mansur:\n</i>"
+    kirish += """   Ma'lumki, Qur'oni karim Alloh taolo tomonidan Payg'ambarimiz Muhammad alayhissalomga 23 yil mobaynida sura, oyat tarzida elchi farishta –Jabroil alayhissalom orqali ilohiy vahiy sifatida, arab tilida, og'zaki nozil qilingan. Islom dini ta'limotining asosiy manbalari (Qur'on, Sunnat, Ijmo', Qiyos)ning birinchisi sanalmish bu Kalomi sharifning til va bayon jihatidan ilohiy mo'jizaligi ham uni arab tilida o'qib, fikr yuritgandagina namoyon bo'ladi. Boshqa har qanday tilga o'girilganda Qur'on tiliga xos xususiyatlar, nazmiy uslub, maftunkor ohang va ruhiy ta'sir o'z kuchini yo'qotadi. Tarjimon har qancha mahoratli, tajribali lug'atga boy bo'lmasin, oyatlarning arabcha holidagi mazmunini boshqa tilda mukammal ifoda eta olmaydi. Bu inkor etib bo'lmas haqiqat.
+   Arab tilida o'qib anglash esa, hammaning ham imkon darajasida emas. Hatto arablarning o'zlari ham Qur'on oyatlarini to'la tushuna olmasliklarini tan oladilar. Ulug' sahobalar ham ko'pdan-ko'p oyatlar mazmunida bahslashib, bir yechimga kelisha olmay, Rosul alayhissalomning o'zlaridan so'rab, aniqlab olganlari to'g'risida sahih hadislar mavjud. """
+    kirish += "\n\n<i>Kamchiliklar uchun avvaldan uzur!</i>"
 
-    update.message.reply_html(f"<b>Assalom-u alaykum, <i> {username}</i> </b>\n\n\
-🤖 Men orqali <b>Qur'oni Karim suralari</b>ni topishingiz mumkin 🌐", reply_markup=main_buttons)
+    update.message.reply_html(text=kirish, reply_markup=reply_markup)
 
-    update.message.reply_html("<b>Qur'oni Karim</b>", reply_markup=reply_markup)
-
-    # Tell ConversationHandler that we're in state `FIRST` now
-    return FIRST
 
 
 
@@ -140,7 +149,6 @@ def suralar_chiqar(a):
 
 
 def royxat_tuz2(a1, a2):
-    print("royxat2")
     # a1 - sura raqami
     # a2 - sahifa raqami
     a1, a2 = int(a1), int(a2)
@@ -164,7 +172,6 @@ def royxat_tuz2(a1, a2):
 
 
 def oyat_chiqar(a1, a2):
-    print(f"{a1}-surani tanladingiz")
     # a1 - sura raqami
     # a2 - sahifa raqami
     a1, a2 = int(a1), int(a2)
@@ -173,27 +180,20 @@ def oyat_chiqar(a1, a2):
         lst = list(range(a2*5+1,soni+1))
     else:
         lst = list(range(a2*5+1, a2*5+6))
-    matn = f"<b><i>{suralar_raqami[str(a1)]}</i>   surasi oyatlari</b>          {lst[0]}-{lst[-1]}   <i>{soni} dan</i>\n\n" 
-    print("\n"*4)
-    print("1")
-    print(lst)
-    print("\n"*4)
+    matn = f"<b><i>{suralar_raqami[str(a1)]}</i>   surasi oyatlari</b>\n{lst[0]}-{lst[-1]}   <i>{soni} dan</i>\n\n" 
+
     for d in lst:
         matn += f"<b>{d}.</b>  {oyat_top(a1, d)}\n\n"
     
     return matn
 
 
-
-
     
 def funk1(update: Update, context: CallbackContext):
-    print('\n'*4)
-    print('funk1')
+   
     ana = context.bot.send_message(chat_id=update.effective_message.chat_id,
             text="Iltimos biroz kuting...")
-    print(ana)
-    print('\n'*4)
+    
 
     query = update.callback_query
     query.answer()
@@ -202,11 +202,9 @@ def funk1(update: Update, context: CallbackContext):
     if data == asosiy_tugma:
         inlinekeyboard = royxat_tuz(0)
         matn = suralar_chiqar(0)
-        # query.edit_message_text(text="<b>asdas</b>", parse_mode=PARSEMODE_HTML)
         query.edit_message_text(text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
 
     if 'sura' in data:
-        print("sura borligini topdi")
         a = data.split("|")[2]
         # a - sahifa raqami
         
@@ -246,7 +244,8 @@ def funk1(update: Update, context: CallbackContext):
         sura_r = data.split("|")[1]
         if "bosh" in data:
             inlinekeyboard = royxat_tuz2(sura_r, 0)
-            matn = oyat_chiqar(sura_r, 0)
+            matn = "<b><i>Mehribon va rahmli Alloh nomi bilan (boshlayman). </i></b>\n\n"
+            matn += oyat_chiqar(sura_r, 0)
             context.bot.send_message(chat_id=update.effective_message.chat_id,
                 text=matn,parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
         else:
@@ -264,7 +263,14 @@ def funk1(update: Update, context: CallbackContext):
                 else:
                     p = int(sahifa_tartibi) + 1 
             else:
-                pass
+                oyat_r = data.split("|")[3]
+                oyat_self = "<b>QUR'ONI KARIM</b>\n"
+                oyat_self += f"<b>{suralar_raqami[sura_r]}</b> <i>surasi</i>, <b>{oyat_r}</b>–<i>oyat</i>\n\n"
+                oyat_self += oyat_top(sura_r, oyat_r)
+                context.bot.send_message(chat_id=update.effective_message.chat_id,
+                text=oyat_self, parse_mode=PARSEMODE_HTML)
+
+                
             if p != None:
                 inlinekeyboard = royxat_tuz2(sura_r, p)
                 matn = oyat_chiqar(sura_r, p)
@@ -280,11 +286,31 @@ def funk2(update: Update, context: CallbackContext):
     matn = suralar_chiqar(0)
     update.message.reply_text(text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)     
 
+def funk3(update: Update, context: CallbackContext):
 
-def main() -> None:
+    keyboard = [
+        [
+            InlineKeyboardButton(asosiy_tugma, callback_data=asosiy_tugma),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    kirish = "<i>Bismillahir rohmanir rohiym</i> \n        <b>QUR'ONI KARIM</b>\n\n"
+    kirish += "<i>Tarjima muallifi:</i> <b>Shayx Muhammad Sodiq Muhammad Yusuf</b>\n"
+    kirish += "<i>Suralar haqida:</i> <b>Alouddin Mansur</b>\n\n"
+    kirish += "<i>Abdulaziz Mansur:\n</i>"
+    kirish += """   Ma'lumki, Qur'oni karim Alloh taolo tomonidan Payg'ambarimiz Muhammad alayhissalomga 23 yil mobaynida sura, oyat tarzida elchi farishta –Jabroil alayhissalom orqali ilohiy vahiy sifatida, arab tilida, og'zaki nozil qilingan. Islom dini ta'limotining asosiy manbalari (Qur'on, Sunnat, Ijmo', Qiyos)ning birinchisi sanalmish bu Kalomi sharifning til va bayon jihatidan ilohiy mo'jizaligi ham uni arab tilida o'qib, fikr yuritgandagina namoyon bo'ladi. Boshqa har qanday tilga o'girilganda Qur'on tiliga xos xususiyatlar, nazmiy uslub, maftunkor ohang va ruhiy ta'sir o'z kuchini yo'qotadi. Tarjimon har qancha mahoratli, tajribali lug'atga boy bo'lmasin, oyatlarning arabcha holidagi mazmunini boshqa tilda mukammal ifoda eta olmaydi. Bu inkor etib bo'lmas haqiqat.
+   Arab tilida o'qib anglash esa, hammaning ham imkon darajasida emas. Hatto arablarning o'zlari ham Qur'on oyatlarini to'la tushuna olmasliklarini tan oladilar. Ulug' sahobalar ham ko'pdan-ko'p oyatlar mazmunida bahslashib, bir yechimga kelisha olmay, Rosul alayhissalomning o'zlaridan so'rab, aniqlab olganlari to'g'risida sahih hadislar mavjud."""
+    kirish += "\n\n<i>Kamchiliklar uchun avvaldan uzur!</i>"
+
+    update.message.reply_html(text=kirish, reply_markup=reply_markup)
+
+
+def main():
     """Run the bot."""
     # Create the Updater and pass it your bot's token.
-    TOKEN = "1898387737:AAEhjGQr0LhHZeM4d4u5LYLPi_mxG9aOy6E"
+    TOKEN = "1910700952:AAGRQyfXiVfasDhHIBqQB49McKAcjmK1nAw"
+
     updater = Updater(TOKEN, use_context=True)
 
     # Get the dispatcher to register handlers
@@ -293,6 +319,8 @@ def main() -> None:
 
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(MessageHandler(Filters.regex(asosiy_tugma), funk2))
+    dispatcher.add_handler(MessageHandler(Filters.regex(kitob_haqida), funk3))
+
     dispatcher.add_handler(CallbackQueryHandler(funk1))
 
 
@@ -312,7 +340,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except:
-        print("Xatolik yuz berdi")
+    main()

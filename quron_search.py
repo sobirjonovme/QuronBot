@@ -1,5 +1,5 @@
 
-from surah import suralar_nomi, suralar_raqami, suralar_info
+from surah import suralar_info
 import requests
 from pprint import pprint
 url = "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/uzb-muhammadsodikmu.min.json"
@@ -29,11 +29,6 @@ def oyat_top(a1, a2):
     r = r.json()
     text = r['text']
     return text
-    # return {
-    # 'sura': suralar_raqami[str(a1)],
-    # 'oyat_raqami': r['verse'],
-    # 'text': text,
-    # }
 
 def oyat_soni(sura_raqami):
     
@@ -43,15 +38,20 @@ def oyat_soni(sura_raqami):
     sura = r['chapter']
     return len(sura)
 
-if __name__ == '__main__':
-        
-    print(str('olma'))
-    
-    print(oyat_top(1, 1))
-    print(oyat_top(1, 2))
-    
 
 
+
+
+
+# if __name__ == '__main__':
+#     print("asdas\n"*20)
+#     print(oyat_soni(3))
+    
+    # print(str('olma'))
+    
+    # print(oyat_top(1, 1))
+    # print(oyat_top(1, 2))
+    
     # sura = sura_top('yunus')
     # print(sura)
     # print(suralar_info[1])
