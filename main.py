@@ -31,9 +31,9 @@ from telegram.ext import (
     ConversationHandler,
 )
 
-import os
+# import os
 
-PORT = int(os.environ.get('PORT', '8443'))
+# PORT = int(os.environ.get('PORT', '8443'))
 
 
 
@@ -345,9 +345,12 @@ def funk1(update: Update, context: CallbackContext):
         file = open(baza_fayl_nomi, "r")
         context.bot.send_document(
             chat_id=update.effective_user.id, document=file)
-    
-    context.bot.delete_message(chat_id=update.effective_message.chat_id,
-                message_id=ana.message_id)
+
+    try:
+        context.bot.delete_message(chat_id=update.effective_message.chat_id,
+                    message_id=ana.message_id)
+    except:
+        print("Kutish haqidagi xabarni o'chirishda xatolik")
 
 
 def funk2(update: Update, context: CallbackContext):
