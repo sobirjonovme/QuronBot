@@ -1,12 +1,15 @@
 
 
 import logging
-
+import json
 from telegram.constants import PARSEMODE_HTML
 
 
+from admin_funksiyalari import users_list, users_number
 from surah import suralar_raqami
 from quron_search import oyat_top, sura_info, oyat_soni
+
+
 
 from telegram import (
     InlineKeyboardButton,
@@ -44,8 +47,13 @@ logger = logging.getLogger(__name__)
 
 
 
+
+baza_fayl_nomi = "quron_bot_baza.json"
+
+
 asosiy_tugma = "Suralar ro'yxati"
 kitob_haqida = "Qur'oni Karim haqida"
+
 
 main_buttons = ReplyKeyboardMarkup(
     [
@@ -59,16 +67,34 @@ main_buttons = ReplyKeyboardMarkup(
 )
 
 
+
+
+
+
+
 def start(update: Update, context: CallbackContext):
     """Send message on `/start`."""
     # Get user that sent /start and log his name
     user = update.message.from_user
+    foydalanuvchi = update.effective_user
     username = user.full_name
     logger.info("User %s started the conversation.", user.first_name)
-    # Build InlineKeyboard where each button has a displayed text
-    # and a string as callback_data
-    # The keyboard is a list of button rows, where each row is in turn
-    # a list (hence `[[...]]`).
+
+
+    # Foydalanuvchilar haqidagi ma'lumotni bazaga saqlab boradi
+    with open(baza_fayl_nomi, "r") as f:
+        baza_malumoti = json.load(f)
+
+    with open(baza_fayl_nomi, "w") as f:
+        baza_malumoti["users"][str(foydalanuvchi.id)] = {
+            "full_name" : foydalanuvchi.full_name,
+            "user_name" : foydalanuvchi.username,
+        }
+        json.dump(baza_malumoti, f, indent=4)
+
+
+
+
     keyboard = [
         [
             InlineKeyboardButton(asosiy_tugma, callback_data=asosiy_tugma),
@@ -90,6 +116,40 @@ def start(update: Update, context: CallbackContext):
 
     update.message.reply_html(text=kirish, reply_markup=reply_markup)
 
+
+
+
+def admin_sozlamalari(update: Update, context: CallbackContext):
+    parol = context.args[0]
+    if parol == "hunter2003":
+        keyboard = [
+            [
+                InlineKeyboardButton("Foydalanuvchilar ro'yxati", callback_data="foydalanuvchilar_royxati"),
+            ],
+            [
+                InlineKeyboardButton("Baza(json) fayli", callback_data="baza_fayl")
+            ]
+        ]
+        reply_keyboard = InlineKeyboardMarkup(keyboard)
+
+        matn = "<b>Xush kelibsiz!</b>\n\n"
+        matn += f"<i>Hozirda <b>bot</b>dan </i> <b>{users_number()}</b> <i>nafar odam foydalanmoqda</i>"
+        update.message.reply_html(text=matn, reply_markup=reply_keyboard)
+
+def foydalanuvchi_saqla(update: Update, context: CallbackContext): 
+    # Foydalanuvchilar haqidagi ma'lumotni bazaga saqlab boradi
+    
+    foydalanuvchi = update.effective_user
+
+    with open(baza_fayl_nomi, "r") as f:
+        baza_malumoti = json.load(f)
+
+    with open(baza_fayl_nomi, "w") as f:
+        baza_malumoti["users"][str(foydalanuvchi.id)] = {
+            "full_name" : foydalanuvchi.full_name,
+            "user_name" : foydalanuvchi.username,
+        }
+        json.dump(baza_malumoti, f, indent=4)
 
 
 
@@ -277,6 +337,15 @@ def funk1(update: Update, context: CallbackContext):
                 query.edit_message_text(text=matn,
                                 parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
 
+    if "foydalanuvchilar_royxati" in data:
+        context.bot.send_message(
+            chat_id=update.effective_user.id, text=users_list())
+    
+    if "baza_fayl" in data:
+        file = open(baza_fayl_nomi, "r")
+        context.bot.send_document(
+            chat_id=update.effective_user.id, document=file)
+    
     context.bot.delete_message(chat_id=update.effective_message.chat_id,
                 message_id=ana.message_id)
 
@@ -284,7 +353,11 @@ def funk1(update: Update, context: CallbackContext):
 def funk2(update: Update, context: CallbackContext):
     inlinekeyboard = royxat_tuz(0)
     matn = suralar_chiqar(0)
-    update.message.reply_text(text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)     
+    update.message.reply_text(text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
+    
+    # Foydalanuvchilar haqidagi ma'lumotni bazaga saqlab boradi
+    foydalanuvchi_saqla(update, context)
+    
 
 def funk3(update: Update, context: CallbackContext):
 
@@ -304,6 +377,10 @@ def funk3(update: Update, context: CallbackContext):
     kirish += "\n\n<i>Kamchiliklar uchun avvaldan uzur!</i>"
 
     update.message.reply_html(text=kirish, reply_markup=reply_markup)
+    
+    # Foydalanuvchilar haqidagi ma'lumotni bazaga saqlab boradi
+    foydalanuvchi_saqla(update, context)
+    
 
 
 def main():
@@ -320,17 +397,17 @@ def main():
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(MessageHandler(Filters.regex(asosiy_tugma), funk2))
     dispatcher.add_handler(MessageHandler(Filters.regex(kitob_haqida), funk3))
-
+    dispatcher.add_handler(CommandHandler("admin", admin_sozlamalari))
     dispatcher.add_handler(CallbackQueryHandler(funk1))
 
 
     # Start the Bot
-    # updater.start_polling()
+    updater.start_polling()
 
-    updater.start_webhook(listen="0.0.0.0",
-                      port=PORT,
-                      url_path=TOKEN,
-                      webhook_url="https://quron-python-telegram-bot.herokuapp.com/" + TOKEN)
+    # updater.start_webhook(listen="0.0.0.0",
+    #                   port=PORT,
+    #                   url_path=TOKEN,
+    #                   webhook_url="https://quron-python-telegram-bot.herokuapp.com/" + TOKEN)
 
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
