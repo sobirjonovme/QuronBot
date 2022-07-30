@@ -21,6 +21,7 @@ def users_list(file=baza_fayl_nomi):
             matn += f"{n}. {user['full_name']} — Mavjud emas — {a}\n"
     return matn
 
+
 def users_number(file=baza_fayl_nomi):
     with open(file, "r") as f:
         data = json.load(f)

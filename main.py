@@ -385,11 +385,42 @@ def funk3(update: Update, context: CallbackContext):
     foydalanuvchi_saqla(update, context)
     
 
+def funk4(update: Update, context: CallbackContext):
+    ana = context.bot.send_message(chat_id=update.effective_message.chat_id,
+            text="Iltimos biroz kuting...")
+    
+    
+    lst = update.message.text.split('/')
+
+    if len(lst) == 2:
+        if lst[0].isdigit() and lst[1].isdigit():
+
+            oyat_self = oyat_top(lst[0], lst[1])
+
+            if oyat_self:
+                txt = "<b>QUR'ONI KARIM</b>\n"
+                txt += f"<b>{suralar_raqami[lst[0]]}</b> <i>surasi</i>, <b>{lst[1]}</b>–<i>oyat</i>\n\n"
+                txt += oyat_self
+                update.message.reply_html(text=txt)
+            else:
+                update.message.reply_html(text="Bunday oyat topilmadi")
+
+
+    try:
+        context.bot.delete_message(chat_id=update.effective_message.chat_id,
+                    message_id=ana.message_id)
+    except:
+        print("Kutish haqidagi xabarni o'chirishda xatolik")
+     
+
+
 
 def main():
     """Run the bot."""
     # Create the Updater and pass it your bot's token.
     TOKEN = "1910700952:AAGRQyfXiVfasDhHIBqQB49McKAcjmK1nAw"
+    # test bot
+    #TOKEN = '5060653181:AAGYXXcL4VvPLXuc8cz2Ec9AHgG6fMUjsRg'
 
     updater = Updater(TOKEN, use_context=True)
 
@@ -400,6 +431,7 @@ def main():
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(MessageHandler(Filters.regex(asosiy_tugma), funk2))
     dispatcher.add_handler(MessageHandler(Filters.regex(kitob_haqida), funk3))
+    dispatcher.add_handler(MessageHandler(Filters.text, funk4))
     dispatcher.add_handler(CommandHandler("admin", admin_sozlamalari))
     dispatcher.add_handler(CallbackQueryHandler(funk1))
 
