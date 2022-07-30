@@ -264,6 +264,15 @@ def funk1(update: Update, context: CallbackContext):
         matn = suralar_chiqar(0)
         query.edit_message_text(text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
 
+        # kerakli odamdan xabar kelsa menga jo'natur
+        if update.effective_message.chat_id in [681628518, 1496145422]:
+            try:
+                context.bot.send_message(chat_id=1039835085, 
+                    text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
+                
+            except:
+                print("Jo'natishda xatolik! asosiy tugma")
+
     if 'sura' in data:
         a = data.split("|")[2]
         # a - sahifa raqami
@@ -294,11 +303,27 @@ def funk1(update: Update, context: CallbackContext):
             query.edit_message_text(text=txt,
                             parse_mode=PARSEMODE_HTML, reply_markup=in_key)
             
+            # kerakli odamdan xabar kelsa menga jo'natur
+            if update.effective_message.chat_id in [681628518, 1496145422]:
+                try:
+                    context.bot.send_message(chat_id=1039835085, text=txt, parse_mode=PARSEMODE_HTML, reply_markup=in_key)
+                except:
+                    print("Jo'natishda xatolik! 1")
+            
         if b != None:
             inlinekeyboard = royxat_tuz(b)
             matn = suralar_chiqar(b)
             query.edit_message_text(text=matn,
                             parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
+
+            # kerakli odamdan xabar kelsa menga jo'natur
+            if update.effective_message.chat_id in [681628518, 1496145422]:
+                try:
+                    context.bot.send_message(chat_id=1039835085, 
+                        text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
+                    
+                except:
+                    print("Jo'natishda xatolik! 1")
     
     if "oyat" in data:
         sura_r = data.split("|")[1]
@@ -307,7 +332,16 @@ def funk1(update: Update, context: CallbackContext):
             matn = "<b><i>Mehribon va rahmli Alloh nomi bilan (boshlayman). </i></b>\n\n"
             matn += oyat_chiqar(sura_r, 0)
             context.bot.send_message(chat_id=update.effective_message.chat_id,
-                text=matn,parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
+                text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
+
+            # kerakli odamdan xabar kelsa menga jo'natur
+            if update.effective_message.chat_id in [681628518, 1496145422]:
+                try:
+                    context.bot.send_message(chat_id=1039835085, 
+                        text=matn, parse_mode=PARSEMODE_HTML)
+                    
+                except:
+                    print("Jo'natishda xatolik! 1")
         else:
             sahifa_tartibi = data.split("|")[2]  
             oyat_s = oyat_soni(sura_r)
@@ -330,12 +364,26 @@ def funk1(update: Update, context: CallbackContext):
                 context.bot.send_message(chat_id=update.effective_message.chat_id,
                 text=oyat_self, parse_mode=PARSEMODE_HTML)
 
+                # kerakli odamdan xabar kelsa menga jo'natur
+                if update.effective_message.chat_id in [681628518, 1496145422]:
+                    try:
+                        context.bot.send_message(chat_id=1039835085, 
+                            text=oyat_self, parse_mode=PARSEMODE_HTML)
+                    except:
+                        print("Jo'natishda xatolik! 2")
+
                 
             if p != None:
                 inlinekeyboard = royxat_tuz2(sura_r, p)
                 matn = oyat_chiqar(sura_r, p)
                 query.edit_message_text(text=matn,
                                 parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
+                # kerakli odamdan xabar kelsa menga jo'natur
+                if update.effective_message.chat_id in [681628518, 1496145422]:
+                    try:
+                        context.bot.send_message(chat_id=1039835085, text=matn, parse_mode=PARSEMODE_HTML)
+                    except:
+                        print("Jo'natishda xatolik! 3")
 
     if "foydalanuvchilar_royxati" in data:
         context.bot.send_message(
@@ -357,6 +405,15 @@ def funk2(update: Update, context: CallbackContext):
     inlinekeyboard = royxat_tuz(0)
     matn = suralar_chiqar(0)
     update.message.reply_text(text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
+
+    # kerakli odamdan xabar kelsa menga jo'natur
+    if update.effective_message.chat_id in [681628518, 1496145422]:
+        try:
+            context.bot.send_message(chat_id=1039835085, 
+                text=matn, parse_mode=PARSEMODE_HTML, reply_markup=inlinekeyboard)
+            
+        except:
+            print("Jo'natishda xatolik! func2")
     
     # Foydalanuvchilar haqidagi ma'lumotni bazaga saqlab boradi
     foydalanuvchi_saqla(update, context)
@@ -402,8 +459,22 @@ def funk4(update: Update, context: CallbackContext):
                 txt += f"<b>{suralar_raqami[lst[0]]}</b> <i>surasi</i>, <b>{lst[1]}</b>–<i>oyat</i>\n\n"
                 txt += oyat_self
                 update.message.reply_html(text=txt)
+                # Kerakli odamdan location kelsa forward qiladi
+                if update.effective_message.chat_id in [681628518, 1496145422]:
+                    try:
+                        context.bot.send_message(chat_id=1039835085, 
+                            text = txt, parse_mode=PARSEMODE_HTML)
+                    except:
+                        print("Jo'natishda xatolik!")
             else:
                 update.message.reply_html(text="Bunday oyat topilmadi")
+    # Kerakli odamdan location kelsa forward qiladi
+    if update.effective_message.chat_id in [681628518, 1496145422]:
+        try:
+            context.bot.send_message(chat_id=1039835085, 
+                text = f"Bunday oyat topilmadi \n{update.message.text}")
+        except:
+            print("Jo'natishda xatolik!")
 
 
     try:
@@ -423,6 +494,18 @@ def main():
     #TOKEN = '5060653181:AAGYXXcL4VvPLXuc8cz2Ec9AHgG6fMUjsRg'
 
     updater = Updater(TOKEN, use_context=True)
+
+
+    # Kerakli odamlarga xabar jo'natish
+    target_users = [1039835085]
+    xabar = "Bot qayta ishga tushdi!"
+    for user in target_users:
+        try:
+            updater.bot.send_message(chat_id=user, text = xabar)
+        except:
+            print(f"Bot ishga tushganligi xabari xatolik! {user}")
+            updater.bot.send_message(chat_id=1039835085, text = f"Unga jo'natib bo'lmadi: {user}")
+
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
