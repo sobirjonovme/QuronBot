@@ -489,7 +489,7 @@ def funk4(update: Update, context: CallbackContext):
 def main():
     """Run the bot."""
     # Create the Updater and pass it your bot's token.
-    TOKEN = "1910700952:AAGRQyfXiVfasDhHIBqQB49McKAcjmK1nAw"
+    TOKEN = ""
     # test bot
     #TOKEN = '5060653181:AAGYXXcL4VvPLXuc8cz2Ec9AHgG6fMUjsRg'
 

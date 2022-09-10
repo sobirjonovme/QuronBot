@@ -1,5 +1,4 @@
 
-
 import json
 
 baza_fayl_nomi = "quron_bot_baza.json"
